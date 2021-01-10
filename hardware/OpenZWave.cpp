@@ -944,8 +944,6 @@ bool COpenZWave::OpenSerialConnector()
 	OpenZWave::Options::Get()->AddOptionBool("ValidateValueChanges", true);
 	OpenZWave::Options::Get()->AddOptionBool("Associate", true);
 
-	OpenZWave::Options::Get()->AddOptionBool("AutoUpdateConfigFile", false);
-
 	//Set network key for security devices
 	std::string sValue = "0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10";
 	m_sql.GetPreferencesVar("ZWaveNetworkKey", sValue);
@@ -970,10 +968,11 @@ bool COpenZWave::OpenSerialConnector()
 	m_sql.GetPreferencesVar("ZWavePerformReturnRoutes", nValue);
 	OpenZWave::Options::Get()->AddOptionBool("PerformReturnRoutes", (nValue == 1) ? true : false);
 
-	nValue = 1; //default true
+	nValue = 0; //default false
 	m_sql.GetPreferencesVar("ZWaveAutoUpdateConfigFile", nValue);
 	OpenZWave::Options::Get()->AddOptionBool("AutoUpdateConfigFile", (nValue == 1) ? true : false);
-	
+	OpenZWave::Options::Get()->AddOptionString("ReloadAfterUpdate", "NEVER", false);
+
 
 	try
 	{
@@ -3338,6 +3337,13 @@ void COpenZWave::UpdateValue(NodeInfo* pNode, const OpenZWave::ValueID& vID)
 	case ZDTYPE_SENSOR_KVARH:
 		if (vType != OpenZWave::ValueID::ValueType_Decimal)
 			return;
+		if (fValue < -1000000)
+		{
+			//NeoCoolcam reports values of -21474762
+			_log.Log(LOG_ERROR, "OpenZWave: Invalid counter value received!: (%f) Node: %d (0x%02x), CommandClass: %s, Instance: %d, Index: %d, Id: 0x%llX", fValue,
+					static_cast<int>(NodeID), static_cast<int>(NodeID), cclassStr(commandclass), pDevice->orgInstanceID, pDevice->orgIndexID, vID.GetId());
+			return; //counter should not be negative
+		}
 		pDevice->floatValue = fValue * pDevice->scaleMultiply;
 		break;
 	case ZDTYPE_SENSOR_TEMPERATURE:
