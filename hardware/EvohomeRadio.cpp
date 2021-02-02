@@ -1626,7 +1626,7 @@ bool CEvohomeRadio::DecodeOpenThermBridge(CEvohomeMsg& msg)
 	}
 	// The OT command response is in byte 4 and 5
 	int nOTResponse = msg.payload[3] << 8 | msg.payload[4];
-	float fOTResponse = static_cast<float>(nOTResponse) / 256.0f;
+	float fOTResponse = static_cast<float>(nOTResponse) / 256.0F;
 
 	// The OT commands are as per the OT Specification
 	// 05 (ID.05) = Fault Code
@@ -1707,7 +1707,7 @@ bool CEvohomeRadio::DecodeOpenThermSetpoint(CEvohomeMsg& msg)
 	}
 
 	// The OT Control Setpoint is in byte 2 and 3
-	float fOTSetpoint = static_cast<float>(msg.payload[1] << 8 | msg.payload[2]) / 100.0f;
+	float fOTSetpoint = static_cast<float>(msg.payload[1] << 8 | msg.payload[2]) / 100.0F;
 
 	SendTempSensor(1, 255, fOTSetpoint, "Control Setpoint");
 	Log(true, LOG_STATUS, "evohome: %s: Boiler Water Temperature = %.2f C", tag, fOTSetpoint);
@@ -1805,6 +1805,7 @@ bool CEvohomeRadio::DecodeDeviceInfo(CEvohomeMsg& msg)
 	if (nDevType == 0x04) { sprintf(sDevType, "ACTUATOR"); }
 	else if (nDevType == 0x01) { sprintf(sDevType, "SENSOR"); }
 	else if (nDevType == 0x05) { sprintf(sDevType, "HOT WATER"); }
+        else if (nDevType == 0x06) { sprintf(sDevType, "REMOTE GW"); }
 	else if (nDevType == 0x00)
 	{
 		sprintf(sDevType, "CONTROLLER");
