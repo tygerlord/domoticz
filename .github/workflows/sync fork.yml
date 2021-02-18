@@ -17,3 +17,5 @@ jobs:
           owner: domoticz
           base: development
           head: development
+          auto_approve: true
+          personal_token: ${{ secrets.ACTION_SYNC }
