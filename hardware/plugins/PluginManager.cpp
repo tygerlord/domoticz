@@ -67,13 +67,13 @@ namespace Plugins {
 
 	std::map<int, CDomoticzHardwareBase*>	CPluginSystem::m_pPlugins;
 	std::map<std::string, std::string>		CPluginSystem::m_PluginXml;
+	void *CPluginSystem::m_InitialPythonThread;
 
 	CPluginSystem::CPluginSystem()
 	{
 		m_bEnabled = false;
 		m_bAllPluginsStarted = false;
 		m_iPollInterval = 10;
-		m_InitialPythonThread = nullptr;
 	}
 
 	bool CPluginSystem::StartPluginSystem()
